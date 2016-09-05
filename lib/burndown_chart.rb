@@ -148,8 +148,9 @@ class BurndownChart
 
     def plot(sprint_number, options)
       sprint_number = sprint_number.to_s.rjust(2, '0')
+      python_executable = options["python-executable"] || 'python'
       cli_switches = process_options(options)
-      system "python #{plot_helper} #{sprint_number} #{cli_switches.join(' ')}"
+      system "#{python_executable} #{plot_helper} #{sprint_number} #{cli_switches.join(' ')}"
     end
 
     private

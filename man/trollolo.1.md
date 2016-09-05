@@ -71,6 +71,16 @@ Plot the burndown chart for given sprint. This command assumes that you are in
 the burndown directory (initially created with `burndown-init`) and that the
 corresponding file `burndown-data-<sprint-number>.yaml` exists there.
 
+Plotting scripts should be run using Python v2 so if the ```python``` command on
+your system (which is used by default), matches the v3 of Python, you can use
+the option ```--python-executable``` to specify the correct python executable
+to use. E.g.
+
+```
+  trollolo plot 1 --python-executable=python2.7
+```
+
+
 ### fetch-burndown-data -- Read data for burndown chart
 
 `trollolo fetch-burndown-data --board-id=<board id>`

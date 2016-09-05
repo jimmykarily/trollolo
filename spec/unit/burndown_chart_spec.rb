@@ -486,6 +486,15 @@ EOT
       expect(described_class).to receive(:system).with('python mescript 42 --test 1 --no-blah')
       described_class.plot(42, {foo: 1, bar: 2})
     end
+
+    context "when --python-executable option is set" do
+      it "uses the executable defined" do
+        allow(described_class).to receive(:process_options).and_return(%w{ --test 1 --no-blah })
+        allow(described_class).to receive(:plot_helper).and_return('mescript')
+        expect(described_class).to receive(:system).with('/usr/bin/my_custom_python mescript 42 --test 1 --no-blah')
+        described_class.plot(42, {"python-executable" => "/usr/bin/my_custom_python"})
+      end
+    end
   end
 
   describe '.plot_helper' do
