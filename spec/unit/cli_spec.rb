@@ -95,6 +95,42 @@ EOT
     }.to output(expected_output).to_stdout
   end
 
+  it "shows the backlog" do
+    full_board_mock
+    @cli.options = {"board-id" => "53186e8391ef8671265eba9d",
+      "backlog-name" => "Sprint Backlog"}
+    expected_output = <<EOT
+
+Priority | Points | Title
+       1 |      3 | (3) P1: Fill Backlog column
+       4 |      5 | (5) P4: Read data from Trollolo
+       5 |      3 | (3) P5: Save read data as reference data
+       6 |      8 | (8) P6: Celebrate testing board
+EOT
+    expect {
+      @cli.show_backlog
+    }.to output(expected_output).to_stdout
+  end
+
+  it "shows the velocity line when showing the backlog with --velocity parameter set" do
+    full_board_mock
+    @cli.options = {"board-id" => "53186e8391ef8671265eba9d", "velocity" => "9",
+      "backlog-name" => "Sprint Backlog"}
+    velocity = 9
+    expected_output = <<EOT
+
+Priority | Points | Title
+       1 |      3 | (3) P1: Fill Backlog column
+       4 |      5 | (5) P4: Read data from Trollolo
+-------------------------
+       5 |      3 | (3) P5: Save read data as reference data
+       6 |      8 | (8) P6: Celebrate testing board
+EOT
+    expect {
+      @cli.show_backlog
+    }.to output(expected_output).to_stdout
+  end
+
   it "gets checklists" do
     full_board_mock
     @cli.options = {"board-id" => "53186e8391ef8671265eba9d"}

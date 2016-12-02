@@ -111,6 +111,53 @@ EOT
     end
   end
 
+  desc "show-backlog", "Show the backlog items"
+  option "board-id", desc: "Id of the Trello board", required: true
+  option "velocity", desc: "The team's average velocity", required: false
+  option "backlog-name", desc: "The name of the backlog column",
+    default: "Backlog", required: false
+  def show_backlog
+    process_global_options options
+    require_trello_credentials
+    velocity = options["velocity"]&.to_i
+
+    trello = TrelloWrapper.new(@@settings)
+    board = trello.board(board_id(options["board-id"]))
+
+    # TODO Get list name from params. Also decide what the Backlog name should be.
+    # It is "Sprint Backlog" or "Backlog"?
+    # TODO: Extract formatting code in a method on its own (e.g. print_cards_with_velocity(cards) )
+    backlog = board.columns.find{|list| list.name == options["backlog-name"] }
+
+    if backlog == nil
+      puts "Backlog not found"
+      return
+    end
+
+    priority_header = "Priority"
+    points_header = "Points"
+    title_header = "Title"
+
+    points_showed = 0
+    velocity_line_shown = false
+
+    puts "\n#{priority_header} | #{points_header} | #{title_header}"
+    backlog.estimated_cards.sort_by{|card| card.priority.to_i }.each_with_index do |card, index|
+      if velocity && !velocity_line_shown && points_showed + card.story_points.to_i > velocity
+        puts "No cards can fit in your current velocity" if index == 0
+
+        puts "-"*(priority_header.length + points_header.length + title_header.length + 6)
+        velocity_line_shown = true
+      end
+
+      puts "#{card.priority.to_s.rjust(priority_header.length)} | "\
+        "#{card.story_points.to_i.to_s.rjust(points_header.length)} | "\
+        "#{card.name}"
+
+      points_showed += card.story_points.to_i
+    end
+  end
+
   desc "get-checklists", "Get checklists"
   option "board-id", :desc => "Id of Trello board", :required => true
   def get_checklists
